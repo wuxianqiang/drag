@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #box {
+            width: 100px;
+            height: 100px;
+            background: rebeccapurple;
+            cursor: move;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box" style="position:absolute;top:0;left:0"></div>
+    <script>
+        var box = document.getElementById('box');
+        box.onmousedown = downBox;
+
+        function downBox(e) {
+            e = e || window.event;
+            // this.setCapture();在谷歌浏览器中不兼容
+            if (this.setCapture) {
+                this.onmousemove = moveBox;
+                this.onmouseup = upBox;
+            } else {
+                var _this = this;
+                document.onmousemove = function (e) {
+                    moveBox.call(_this, e)
+                }
+                document.onmouseup = function (e) {
+                    upBox.call(_this, e)
+                }
+            }
+            this["strX"] = e.clientX;
+            this["strY"] = e.clientY;
+            this["strL"] = parseFloat(this.style.left)
+            this["strT"] = parseFloat(this.style.top)
+
+        }
+
+        function moveBox(e) {
+            e = e || window.event;
+            var minleft = 0;
+            var mintop = 0;
+            var maxleft = (document.documentElement.clientWidth || document.body.clientWidth) - this.offsetWidth;
+            var maxtop = (document.documentElement.clientHeight || document.body.clientHeight) - this.offsetHeight;
+            var toleft = e.clientX - this["strX"] + this["strL"];
+            var totop = e.clientY - this["strY"] + this["strT"];
+            if (toleft < minleft) {
+                this.style.left = minleft + "px";
+            } else if (toleft > maxleft) {
+                this.style.left = maxleft + "px";
+            } else {
+                this.style.left = toleft + "px";
+            }
+            if (totop < mintop) {
+                this.style.top = mintop + "px";
+            } else if (totop > maxtop) {
+                this.style.top = maxtop + "px";
+            } else {
+                this.style.top = totop + "px";
+            }
+        }
+
+        function upBox() {
+            // this.releaseCapture();在谷歌浏览器中不兼容
+            if (this.releaseCapture) {
+                this.onmousemove = null;
+                this.onmouseup = null;
+            } else {
+                document.onmousemove = null;
+                document.onmouseup = null;
+            }
+        }
+    </script>
+</body>
+
+</html>
